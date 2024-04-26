@@ -1,23 +1,29 @@
+const colliderScalingFactor = 2.5;
+const spriteScalingFactor = 0.5
+
 let fruits = [];
 let fruitSprites = [];
-// let fruitDiameters = [];
-let walls = [];
 let initialDiameter = 30;
+let dropped = false;
 
-function randomFruit() {
-
+function randomFruit(x, y) {
+    let randomValue = Math.random() * 4;
+    let randomInt = Math.floor(randomValue);
+    spawnFruits(x, y, randomInt);
 }
 
 // spawn fruit given position and order
 // x: int
 // y: int
 // type: int
-function spawnFruits(x, y) {
+function spawnFruits(x, y, type) {
     let fruit = new fruits.Sprite();
-    fruit.addAni('default', fruitSprites[0]);
-    fruit.ani.scale = 0.5;
-    fruit.name = 'type0';
-	fruit.diameter = initialDiameter;
+    fruit.addAni('default', fruitSprites[type]);
+    fruit.ani.scale = spriteScalingFactor;
+    fruit.name = 'type' + type;
+	fruit.diameter = fruit.ani.width / colliderScalingFactor;
+    console.log(type, fruit.diameter);
+    console.log(fruit.ani);
     fruit.y = y;
     fruit.x = x;
 }
@@ -32,14 +38,7 @@ function collisionDetector(fruit1, fruit2) {
         let y = (fruit1.y + fruit2.y)/2;
         let newFruitType = fruitType + 1;
 
-        let fruit = new fruits.Sprite();
-        fruit.name = 'type' + newFruitType;
-        fruit.addAni('default', fruitSprites[newFruitType]);
-        fruit.ani.scale = 0.5;
-        fruit.diameter = fruit1.diameter * 1.25;
-        fruit.y = y;
-        fruit.x = x;
-
+        spawnFruits(x, y, newFruitType);
         fruit1.remove();
         fruit2.remove();
         console.log("collision detected");
@@ -86,12 +85,14 @@ function setup() {
     wall_right.color = '#f6d581';
     wall_right.stroke = '#f6d581';
     wall_right.strokeWeight = 10;
-
-
 }
 
 function draw() {
-    background('#f7f2c8');   
+    background('#f7f2c8');  
+
+    if (dropped) {
+        randomFruit(mouse.x, mouse.y); 
+    }
 
     fruits.forEach(fruit => {
         fruit.collides(fruits, collisionDetector);
@@ -99,5 +100,5 @@ function draw() {
 }
 
 function mouseClicked() {
-   spawnFruits(mouse.x, mouse.y); 
+    randomFruit(mouse.x, mouse.y);
 }
