@@ -1,7 +1,9 @@
 // TODO: make responsive
-// fix line path rendering
+// fix line path rendering v
+// add next fruit
+// fix scaling
 // add sounds + change sprites
-// Game over/replay
+// add game over/replay
 //
 //
 // CSS design:
@@ -38,8 +40,8 @@ let fruitSprites = [];
 let floor;
 let wallLeft;
 let wallRight;
+let gameOverLine;
 let linePath;
-let scoreBoard;
 let score = 0;
 
 let dropped = true;
@@ -47,7 +49,6 @@ let currentFruit;
 
 // scale width and height of canvas respecting the original aspect ratio
 function scaleCanvas() {
-    console.log("TEST");
     if ((windowWidth / windowHeight) > aspectRatio) {
         canvasSize.canvasWidth = windowHeight * aspectRatio;
         canvasSize.canvasHeight = windowHeight;
@@ -94,6 +95,7 @@ function spawnFruits(x, y, type, updateCurrent) {
 	fruit.diameter = fruit.ani.width / (colliderScalingFactor * scalingFactor);
     fruit.y = y;
     fruit.x = x;
+    console.log(fruit.y);
 
     if (updateCurrent) {
         fruit.collider = 'none';
@@ -101,23 +103,14 @@ function spawnFruits(x, y, type, updateCurrent) {
     }
 }
 
-function createScoreBoard() {
-    scoreBoard = new Sprite();
-    scoreBoard.text = 'Score: 0';
-    scoreBoard.color = '#f7f2c8';
-    scoreBoard.stroke = '#f7f2c8';
-    scoreBoard.textColor = '#000000';
-    scoreBoard.collider = 'none';
-    scoreBoard.textSize = 40;
-    scoreBoard.y = currentFruit.y;
-}
-
 function updateScore(type) {
     // get last character of string then turn to int
     let fruitType = +type[type.length - 1];
     let addScore = (fruitType + 1) * 2;
     score += addScore;
-    scoreBoard.text = 'Score: ' + score;
+
+    let scoreText = 'Score: ' + score;
+    $('#score').text(scoreText);
 }
 
 function collisionDetector(fruit1, fruit2) {
@@ -140,6 +133,17 @@ function collisionDetector(fruit1, fruit2) {
     }
 }
 
+function createTrajectoryLine() {
+    linePath = new Sprite();
+    linePath.h = (500 / scalingFactor) - floor.strokeWeight;
+    linePath.w = 2 / scalingFactor;
+    linePath.y = wallRight.y - floor.strokeWeight;
+    linePath.x = currentFruit.x;
+    linePath.collider = 'none';
+    linePath.color = '#FFFFFF';
+    linePath.stroke = '#FFFFFF';
+}
+
 function setupField() {
     floor = new Sprite();
 	floor.y = canvas.h - (canvas.h * 0.05);
@@ -152,7 +156,7 @@ function setupField() {
 
 
     wallLeft = new Sprite();
-    wallLeft.h = 500 / scalingFactor;
+    wallLeft.h = 530 / scalingFactor;
     wallLeft.w = 5 / scalingFactor;
     wallLeft.y = floor.y - (wallLeft.h * 0.5);
     wallLeft.x = canvas.w * 0.5 + floor.w * 0.5;
@@ -162,7 +166,7 @@ function setupField() {
     wallLeft.strokeWeight = 10 / scalingFactor;
 
     wallRight = new Sprite();
-    wallRight.h = 500 / scalingFactor;
+    wallRight.h = 530 / scalingFactor;
     wallRight.w = 5 / scalingFactor;
     wallRight.y = floor.y - (wallRight.h * 0.5);
     wallRight.x = canvas.w * 0.5 - floor.w * 0.5;
@@ -171,36 +175,40 @@ function setupField() {
     wallRight.stroke = '#f6d581';
     wallRight.strokeWeight = 10 / scalingFactor;
 
-    linePath = new Sprite();
-    linePath.h = 500 / scalingFactor;
-    linePath.w = 2 / scalingFactor;
-    linePath.y = wallRight.y - currentFruit.diameter;
-    linePath.x = currentFruit.x;
-    linePath.collider = 'none';
-    linePath.color = '#FFFFFF';
-    linePath.stroke = '#FFFFFF';
+    gameOverLine = new Sprite();
+    gameOverLine.w = floor.w;
+    // 500/scalingFactor = wallRight.h originally
+    gameOverLine.y = floor.y - (500 / scalingFactor);
+    gameOverLine.collider = 'none';
+    gameOverLine.h = floor.h
 
-    createScoreBoard();
+   
+    createTrajectoryLine();
+    // createScoreBoard();
 }
 
 function followMouse() {
-    // if (mouse.x > wallRight.x) {
-    //     let newCoords = wallRight.x - (wallRight.width + wallRight.strokeWeight);
-    //     currentFruit.x = newCoords;
-    //     linePath.x = newCoords;
-    // }
-    // else if (mouse.x < wallLeft.x) {
-    //     let newCoords = wallLeft.x + (wallLeft.width + wallLeft.strokeWeight);
-    //     currentFruit.x = newCoords;
-    //     linePath.x = newCoords;
-    // }
-    // else {
-    currentFruit.x = mouse.x;
-    currentFruit.y = 200;
-    
-    linePath.x = mouse.x;
-    linePath.y = wallRight.y - currentFruit.diameter;
-    // }
+    if (mouse.x < wallRight.x) {
+        let newCoords = wallRight.x + (wallRight.width + wallRight.strokeWeight);
+        currentFruit.x = newCoords;
+        linePath.x = newCoords;
+    }
+    else if (mouse.x > wallLeft.x) {
+        let newCoords = wallLeft.x - (wallLeft.width + wallLeft.strokeWeight);
+        currentFruit.x = newCoords;
+        linePath.x = newCoords;
+    }
+    else {
+        currentFruit.x = mouse.x;
+        currentFruit.y = 0 + 0.1 * canvas.h;
+        
+        linePath.x = mouse.x;
+        linePath.y = wallRight.y - floor.strokeWeight;
+    }
+}
+
+function gameOver() {
+
 }
 
 
@@ -215,19 +223,12 @@ function setup() {
     scaleCanvas();
 
     let canvasWidth = canvasSize.canvasWidth / 2;
-    let canvasHeight = canvasSize.canvasHeight - 0.1 * canvasSize.canvasHeight;
+    let canvasHeight = canvasSize.canvasHeight - 0.2 * canvasSize.canvasHeight;
 
     canvas = new Canvas(canvasWidth, canvasHeight);
     $(".p5Canvas").appendTo("#canvas-parent");
 
-    // canvas.parent('canvas-parent');
-    console.log("test", canvas.parent);
-
-    console.log(canvasSize);
     scalingFactor = baseHeight / canvasSize.canvasHeight;
-
-    // let x = (windowHeight - canvasSize.canvasWidth) / 2;
-    // let y = (windowHeight - canvasSize.canvasHeight) / 2;
 
     fruits = new Group();
     world.gravity.y = 30 / scalingFactor;
