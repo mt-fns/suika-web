@@ -2,8 +2,12 @@
 // fix line path rendering
 // add sounds + change sprites
 // Game over/replay
-
-
+//
+//
+// CSS design:
+// Cut canvas height, anchor bottom, top
+// Use flex boxes
+//
 // Responsive design:
 // make canvas a set width/height based on the size of the field
 // make positioning relative to the max width/height of the canvas
@@ -209,10 +213,18 @@ function preload() {
 
 function setup() {
     scaleCanvas();
-    canvas = new Canvas(canvasSize.canvasWidth, canvasSize.canvasHeight);
+
+    let canvasWidth = canvasSize.canvasWidth / 2;
+    let canvasHeight = canvasSize.canvasHeight - 0.1 * canvasSize.canvasHeight;
+
+    canvas = new Canvas(canvasWidth, canvasHeight);
+    $(".p5Canvas").appendTo("#canvas-parent");
+
+    // canvas.parent('canvas-parent');
+    console.log("test", canvas.parent);
 
     console.log(canvasSize);
-    scalingFactor = baseWidth / canvasSize.canvasWidth;
+    scalingFactor = baseHeight / canvasSize.canvasHeight;
 
     // let x = (windowHeight - canvasSize.canvasWidth) / 2;
     // let y = (windowHeight - canvasSize.canvasHeight) / 2;
