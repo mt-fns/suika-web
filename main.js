@@ -3,8 +3,10 @@
 // add next fruit
 // fix scaling
 // add sounds + change sprites
-// add game over/replay
-//
+// add game over/replay -> add isFreeFall element and change to false when collission is detected
+// or check if the collision is the current fruit/previous fruit or not
+
+// check if fruit overlaps with the line twice
 //
 // CSS design:
 // Cut canvas height, anchor bottom, top
@@ -37,6 +39,7 @@ let canvasSize = {canvasWidth: 0, canvasHeight: 0}
 
 let fruits = [];
 let fruitSprites = [];
+
 let floor;
 let wallLeft;
 let wallRight;
@@ -46,6 +49,7 @@ let score = 0;
 
 let dropped = true;
 let currentFruit;
+let previousFruit;
 
 // scale width and height of canvas respecting the original aspect ratio
 function scaleCanvas() {
@@ -58,14 +62,12 @@ function scaleCanvas() {
     canvasSize.canvasHeight = windowWidth / aspectRatio;
 }
 
-function resizeField() {
-
-}
-
 function dropFruit() {
     let type = currentFruit.name;
     currentFruit.collider = 'dynamic';
     updateScore(type);
+    previousFruit = currentFruit;
+    currentFruit = null;
     dropped = true;
 }
 
@@ -80,7 +82,6 @@ function randomFruit(x, y) {
     }
 }
 
-
 // spawn fruit given position and order
 // x: int
 // y: int
@@ -90,12 +91,17 @@ function spawnFruits(x, y, type, updateCurrent) {
 
     fruit.addAni('default', fruitSprites[type]);
     fruit.ani.scale = spriteScalingFactor / scalingFactor;
-
     fruit.name = 'type' + type;
+
+    // how may times the fruit has collided wit the game over line
+    fruit.collidedWithUpperBound = 0;
+
+    // used to detect fruits when crossing the game over line
+    fruit.state = 'non-collide';
+
 	fruit.diameter = fruit.ani.width / (colliderScalingFactor * scalingFactor);
     fruit.y = y;
     fruit.x = x;
-    console.log(fruit.y);
 
     if (updateCurrent) {
         fruit.collider = 'none';
@@ -113,23 +119,42 @@ function updateScore(type) {
     $('#score').text(scoreText);
 }
 
-function collisionDetector(fruit1, fruit2) {
-    // current fruit order
-    let fruitType = +fruit1.name[fruit1.name.length - 1];
+function collisionDetector(object1, object2) {
+    // if current fruit has been dropped and collided, spawn a new
+    // current fruit
+    if ((object1 == previousFruit) | (object2 == previousFruit)) {
+        randomFruit(mouse.x, mouse.y); 
+    }
 
-    if ((fruit1 == currentFruit) | (fruit2 == currentFruit)) {
+    if (object1.name != 'bounds') {
+        object1.state = 'collided';
+    }
+    if (object2.name != 'bounds') {
+        object2.state = 'collided';
+    }
+
+    // collision between fruit and any of the walls detected
+    if ((object1.name === 'bounds') | (object2.name === 'bounds')) {
         return;
     }
 
-    if ((fruit1.name == fruit2.name) & (fruitType < fruitSprites.length)) {
+    // collision between fruits
+    // collided fruit type
+    let fruitType = +object1.name[object1.name.length - 1];
+
+    if ((object1 == currentFruit) | (object2 == currentFruit)) {
+        return;
+    }
+
+    if ((object1.name == object2.name) & (fruitType < fruitSprites.length)) {
         // new position for fruit
-        let x = (fruit1.x + fruit2.x)/2;
-        let y = (fruit1.y + fruit2.y)/2;
+        let x = (object1.x + object2.x)/2;
+        let y = (object1.y + object2.y)/2;
         let newFruitType = fruitType + 1;
 
         spawnFruits(x, y, newFruitType, false);
-        fruit1.remove();
-        fruit2.remove();
+        object1.remove();
+        object2.remove();
     }
 }
 
@@ -153,6 +178,7 @@ function setupField() {
     floor.color = '#f6d581';
     floor.stroke = '#f6d581';
     floor.strokeWeight = 10 / scalingFactor;
+    floor.name = 'bounds';
 
 
     wallLeft = new Sprite();
@@ -164,6 +190,7 @@ function setupField() {
     wallLeft.color = '#f6d581';
     wallLeft.stroke = '#f6d581';
     wallLeft.strokeWeight = 10 / scalingFactor;
+    wallLeft.name = 'bounds';
 
     wallRight = new Sprite();
     wallRight.h = 530 / scalingFactor;
@@ -174,8 +201,10 @@ function setupField() {
     wallRight.color = '#f6d581';
     wallRight.stroke = '#f6d581';
     wallRight.strokeWeight = 10 / scalingFactor;
+    wallRight.name = 'bounds';
 
     gameOverLine = new Sprite();
+    gameOverLine.name = 'over';
     gameOverLine.w = floor.w;
     // 500/scalingFactor = wallRight.h originally
     gameOverLine.y = floor.y - (500 / scalingFactor);
@@ -207,8 +236,17 @@ function followMouse() {
     }
 }
 
-function gameOver() {
+function detectGameOver(fruit) {
+    // if fruit collides with upper bound twice, game over
+    if (fruit.y <= gameOverLine.y) {
+        if (fruit.state == 'collided') {
+            console.log('Game Over');
+        }
+    }
+}
 
+function overlapUpperBound(object1, object2) {
+    object1.collidedWithUpperBound++;
 }
 
 
@@ -226,7 +264,7 @@ function setup() {
     let canvasHeight = canvasSize.canvasHeight - 0.2 * canvasSize.canvasHeight;
 
     canvas = new Canvas(canvasWidth, canvasHeight);
-    $(".p5Canvas").appendTo("#canvas-parent");
+    $('.p5Canvas').appendTo('#canvas-parent');
 
     scalingFactor = baseHeight / canvasSize.canvasHeight;
 
@@ -235,25 +273,31 @@ function setup() {
 
     randomFruit(canvas.w * 0.5, 75);
 
-    console.log(scalingFactor);
     setupField();
 }
 
 function draw() {
-    background('#f7f2c8');  
+    background('#f7f2c8'); 
 
-    if (dropped) {
-        randomFruit(mouse.x, mouse.y); 
+    if (currentFruit != null) {
+        followMouse();
     }
-    followMouse();
 
     fruits.forEach(fruit => {
         fruit.collides(fruits, collisionDetector);
+        fruit.collides(wallLeft, collisionDetector);
+        fruit.collides(floor, collisionDetector);
+        fruit.collides(wallRight, collisionDetector);
+        fruit.overlaps(gameOverLine, overlapUpperBound);
+
+        detectGameOver(fruit);
     });
 }
 
 
 function mouseClicked() {
-    dropFruit();
-    randomFruit(mouse.x, mouse.y);
+    if (currentFruit != null) {
+        dropFruit();
+    }
+    // randomFruit(mouse.x, mouse.y);
 }
