@@ -1,10 +1,9 @@
 // TODO: make responsive
-// fix line path rendering v
+// fix set height for current fruit spawning + follow mouse
 // add next fruit
-// fix scaling
+// add cloud + fix path rendering
 // add sounds + change sprites
-// add game over/replay -> add isFreeFall element and change to false when collission is detected
-// or check if the collision is the current fruit/previous fruit or not
+// add game over screen
 
 // check if fruit overlaps with the line twice
 //
@@ -216,37 +215,46 @@ function setupField() {
     // createScoreBoard();
 }
 
-function followMouse() {
+// make trajectory line follow mouse position
+function lineFollowMouse() {
     if (mouse.x < wallRight.x) {
         let newCoords = wallRight.x + (wallRight.width + wallRight.strokeWeight);
-        currentFruit.x = newCoords;
         linePath.x = newCoords;
     }
     else if (mouse.x > wallLeft.x) {
         let newCoords = wallLeft.x - (wallLeft.width + wallLeft.strokeWeight);
-        currentFruit.x = newCoords;
         linePath.x = newCoords;
     }
     else {
-        currentFruit.x = mouse.x;
-        currentFruit.y = 0 + 0.1 * canvas.h;
-        
         linePath.x = mouse.x;
         linePath.y = wallRight.y - floor.strokeWeight;
     }
 }
 
+// make current fruit follow mouse position
+function currentFruitFollowMouse() {
+    if (mouse.x < wallRight.x) {
+        let newCoords = wallRight.x + (wallRight.width + wallRight.strokeWeight);
+        currentFruit.x = newCoords;
+    }
+    else if (mouse.x > wallLeft.x) {
+        let newCoords = wallLeft.x - (wallLeft.width + wallLeft.strokeWeight);
+        currentFruit.x = newCoords;
+    }
+    else {
+        currentFruit.x = mouse.x;
+        currentFruit.y = 0 + 0.1 * canvas.h;
+    }
+}
+
 function detectGameOver(fruit) {
-    // if fruit collides with upper bound twice, game over
+    // if fruit collides with upper bound and has been
+    // dropped previously, game over
     if (fruit.y <= gameOverLine.y) {
         if (fruit.state == 'collided') {
             console.log('Game Over');
         }
     }
-}
-
-function overlapUpperBound(object1, object2) {
-    object1.collidedWithUpperBound++;
 }
 
 
@@ -279,8 +287,10 @@ function setup() {
 function draw() {
     background('#f7f2c8'); 
 
+    lineFollowMouse();
+    
     if (currentFruit != null) {
-        followMouse();
+        currentFruitFollowMouse();
     }
 
     fruits.forEach(fruit => {
@@ -288,7 +298,6 @@ function draw() {
         fruit.collides(wallLeft, collisionDetector);
         fruit.collides(floor, collisionDetector);
         fruit.collides(wallRight, collisionDetector);
-        fruit.overlaps(gameOverLine, overlapUpperBound);
 
         detectGameOver(fruit);
     });
@@ -299,5 +308,4 @@ function mouseClicked() {
     if (currentFruit != null) {
         dropFruit();
     }
-    // randomFruit(mouse.x, mouse.y);
 }
