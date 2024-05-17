@@ -1,4 +1,5 @@
 // TODO: make responsive
+// fix colliders/change gravity value
 // fix set height for current fruit spawning + follow mouse
 // add next fruit
 // add cloud + fix path rendering
@@ -145,7 +146,7 @@ function collisionDetector(object1, object2) {
         return;
     }
 
-    if ((object1.name == object2.name) & (fruitType < fruitSprites.length)) {
+    if ((object1.name == object2.name) & (fruitType < (fruitSprites.length))) {
         // new position for fruit
         let x = (object1.x + object2.x)/2;
         let y = (object1.y + object2.y)/2;

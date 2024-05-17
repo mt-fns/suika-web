@@ -1,14 +1,25 @@
+@keyframes pan {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 100% 0%;
+  }
+}
+
 html, body {
     margin: 0;
     padding: 0;
-    background-color: #f7f2c8;
-  }
+    background-image: url("https://assets.codepen.io/1468070/Star+Pattern+3.svg");
+    animation: pan 180s linear infinite;
+    background-color: #F8ECE1;
+}
 
-#header {
+.card {
   text-align: center;
-  background-color: green;
+  background-color: #f5cd84;
   border-radius: 20px;
-  width: 60vw;
+  width: 40vw;
   height: 20vh;
   display: block;
   margin: auto;
@@ -16,10 +27,22 @@ html, body {
   padding: 10px;
 }
 
+.card-title {
+  font-family: 'verdana';
+}
+
+.card-content {
+  font-family: 'verdana';
+  text-align: left;
+  font-size: 1vw;
+}
+
 
 .large-container {
-  background-color: aqua;
+  background-image: url('public/background.png');
+  background-color: #f7f2c8;
   display: flex;
+  height: 90vh;
   flex-direction: row;
   margin: auto;
   justify-content: center;
@@ -51,5 +74,17 @@ canvas {
   border-radius: 50%;
   display: inline-block;
   margin: auto;
+}
+
+#color-0 {
+  background-color: #FFE3AC;
+}
+
+#color-1 {
+  background-color: #FFCF9A;
+}
+
+#color-2 {
+  background-color: #FFB897;
 }
 
