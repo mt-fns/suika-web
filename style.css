@@ -13,7 +13,7 @@ html, body {
     background-image: url("https://assets.codepen.io/1468070/Star+Pattern+3.svg");
     background-size: 25%;  
     animation: pan 180s linear infinite;
-    background-color: #F8ECE1;
+    background-color: #FCBD27;
 }
 
 .card {
@@ -89,7 +89,7 @@ canvas {
   align-items: center;
 }
 
-#score {
+#score, #next-fruit {
   font-family: 'verdana';
   color: white;
 }

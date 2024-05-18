@@ -49,6 +49,7 @@ let score = 0;
 
 let dropped = true;
 let currentFruit;
+let nextFruitType;
 let previousFruit;
 
 // scale width and height of canvas respecting the original aspect ratio
@@ -81,6 +82,18 @@ function randomFruit(x, y) {
         dropped = false;
     }
 }
+
+function nextFruit() {
+    let randomValue = Math.random() * 5;
+
+    // random fruit type
+    let randomInt = Math.floor(randomValue);
+    nextFruitType = randomInt;
+
+    let imgName = 'public/' + nextFruitType + '.png';
+    $('#next-fruit-sprite').attr('src', imgName);
+}
+
 
 // spawn fruit given position and order
 // x: int
@@ -123,7 +136,12 @@ function collisionDetector(object1, object2) {
     // if current fruit has been dropped and collided, spawn a new
     // current fruit
     if ((object1 == previousFruit) | (object2 == previousFruit)) {
-        randomFruit(mouse.x, mouse.y); 
+        // spawn in new current fruit and generate new next fruit
+        if (dropped) {
+            spawnFruits(mouse.x, mouse.y, nextFruitType, true);
+            nextFruit();
+            dropped = false;
+        }
     }
 
     if (object1.name != 'bounds') {
@@ -281,6 +299,7 @@ function setup() {
     world.gravity.y = 30 / scalingFactor;
 
     randomFruit(canvas.w * 0.5, 75);
+    nextFruit();
 
     setupField();
 }
