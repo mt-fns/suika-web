@@ -3,9 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!--
-         <script src="https://unpkg.com/kaboom@3000.0.1/dist/kaboom.js"></script>
-    -->
     <link rel="stylesheet" href="style.css">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -68,15 +65,35 @@
          
      </div>
      
-     <div class="card" id="color-3">
-         <h3 class="card-title">Projects</h3>
-         <p>
-             Coding truly is my *passion* (I picked this major because I like money).
-             I started programming in the womb to maximize my chances of getting a 200k+ offer
-             from Google. After going through first year in uni, I realized that I wanted to build
-             stuff instead of inverting a binary tree in O(1) time. Even after doing my own projects
-             I still felt empty and I realized that real computer science was the friends we made along the way.
-         </p>
+     <div class="card" id="card-3">
+         <h3 class="card-title">Some of My Favourite Projects</h3>
+         <div class="card-content">
+            <div class="video-container">
+                <video onloadstart="this.playbackRate = 1.5;" controls>
+                    <source src="public/raycasting.mov">
+                  Your browser does not support the video tag.
+                </video>
+                <p>
+                    Raycasting Visualizer | <a class="button-git" href="https://github.com/mt-fns/Ray_Casting">Github</a>
+                </p>
+            </div>
+           
+            <div class="video-container">
+                <video onloadstart="this.playbackRate = 1.5;" controls>
+                    <source src="public/nnfs.mov">
+                  Your browser does not support the video tag.
+                </video>
+                <p>
+                    Neural Network from Scratch | <a class="button-git" href="https://github.com/mt-fns/NeuralNetworkVisualizer">Github</a>
+                </p>
+            </div>
+
+            <div class="footer">
+                <a class="button-link" href="https://github.com/mt-fns">Github</a>
+                <a class="button-link" href="https://www.linkedin.com/in/michael-tanto-720b12271/">LinkedIn</a>
+                <a class="button-link" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley">Discord</a>
+            </div>
+         </div>
     </div>
 
     <script src="main.js"></script>

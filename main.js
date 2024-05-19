@@ -138,7 +138,7 @@ function collisionDetector(object1, object2) {
     if ((object1 == previousFruit) | (object2 == previousFruit)) {
         // spawn in new current fruit and generate new next fruit
         if (dropped) {
-            spawnFruits(mouse.x, mouse.y, nextFruitType, true);
+            spawnFruits(mouse.x, 0.1 * canvas.h, nextFruitType, true);
             nextFruit();
             dropped = false;
         }
@@ -177,6 +177,7 @@ function collisionDetector(object1, object2) {
 }
 
 function createTrajectoryLine() {
+    
     linePath = new Sprite();
     linePath.h = (500 / scalingFactor) - floor.strokeWeight;
     linePath.w = 2 / scalingFactor;
@@ -185,6 +186,7 @@ function createTrajectoryLine() {
     linePath.collider = 'none';
     linePath.color = '#FFFFFF';
     linePath.stroke = '#FFFFFF';
+    linePath.opacity = 0.4;
 }
 
 function setupField() {
@@ -197,6 +199,16 @@ function setupField() {
     floor.stroke = '#f6d581';
     floor.strokeWeight = 10 / scalingFactor;
     floor.name = 'bounds';
+
+    gameOverLine = new Sprite();
+    gameOverLine.name = 'over';
+    gameOverLine.w = floor.w;
+    // 500/scalingFactor = wallRight.h originally
+    gameOverLine.y = floor.y - (500 / scalingFactor);
+    gameOverLine.collider = 'none';
+    gameOverLine.h = floor.h
+    gameOverLine.color = 'red';
+    gameOverLine.stroke = 'red';
 
 
     wallLeft = new Sprite();
@@ -221,14 +233,6 @@ function setupField() {
     wallRight.strokeWeight = 10 / scalingFactor;
     wallRight.name = 'bounds';
 
-    gameOverLine = new Sprite();
-    gameOverLine.name = 'over';
-    gameOverLine.w = floor.w;
-    // 500/scalingFactor = wallRight.h originally
-    gameOverLine.y = floor.y - (500 / scalingFactor);
-    gameOverLine.collider = 'none';
-    gameOverLine.h = floor.h
-
    
     createTrajectoryLine();
     // createScoreBoard();
@@ -252,17 +256,22 @@ function lineFollowMouse() {
 
 // make current fruit follow mouse position
 function currentFruitFollowMouse() {
-    if (mouse.x < wallRight.x) {
-        let newCoords = wallRight.x + (wallRight.width + wallRight.strokeWeight);
+    if (mouse.x < (wallRight.x + currentFruit.width)) {
+        let newCoords = wallRight.x + (wallRight.width + wallRight.strokeWeight + currentFruit.width * 0.5);
         currentFruit.x = newCoords;
+        linePath.x = newCoords;
     }
-    else if (mouse.x > wallLeft.x) {
-        let newCoords = wallLeft.x - (wallLeft.width + wallLeft.strokeWeight);
+    else if (mouse.x > (wallLeft.x - currentFruit.width)) {
+        let newCoords = wallLeft.x - (wallLeft.width + wallLeft.strokeWeight + currentFruit.width * 0.5);
         currentFruit.x = newCoords;
+        linePath.x = newCoords;
+
     }
     else {
         currentFruit.x = mouse.x;
-        currentFruit.y = 0 + 0.1 * canvas.h;
+        currentFruit.y = 0.1 * canvas.h;
+        linePath.x = mouse.x;
+        linePath.y = wallRight.y - floor.strokeWeight;
     }
 }
 
@@ -271,7 +280,11 @@ function detectGameOver(fruit) {
     // dropped previously, game over
     if (fruit.y <= gameOverLine.y) {
         if (fruit.state == 'collided') {
-            console.log('Game Over');
+            if(!alert('Game Over!')){
+                window.location.reload();
+                canvas.clear();
+            }
+
         }
     }
 }
@@ -298,7 +311,7 @@ function setup() {
     fruits = new Group();
     world.gravity.y = 30 / scalingFactor;
 
-    randomFruit(canvas.w * 0.5, 75);
+    randomFruit(canvas.w * 0.5, 0.1 * canvas.h);
     nextFruit();
 
     setupField();

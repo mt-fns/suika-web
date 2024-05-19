@@ -10,16 +10,20 @@
 html, body {
     margin: 0;
     padding: 0;
-    background-image: url("https://assets.codepen.io/1468070/Star+Pattern+3.svg");
-    background-size: 25%;  
+    background-image: 
+    radial-gradient(closest-side at 25% 25%,#F9E595 80%,#0000 81%),
+    radial-gradient(closest-side at 75% 75%,#F9E595 80%,#0000 81%);
+    background-size: 400px 400px;
+
     animation: pan 180s linear infinite;
-    background-color: #FCBD27;
+    background-color: #FECE5E;
 }
 
 .card {
   align-content: center;
   background-color: #f5cd84;
   border-radius: 20px;
+  border-color: #fff;
   width: 40vw;
   height: 15vw;
   display: block;
@@ -51,6 +55,12 @@ html, body {
 #card-2 {
   padding-left: 10%;
   padding-right:  10%;
+}
+
+#card-3 {
+  text-align: center;
+  width: 40vw;
+  height: 50vw;
 }
 
 
@@ -111,3 +121,41 @@ canvas {
   background-color: #FFB897;
 }
 
+video {
+  width: 20vw;
+  height: 15vw;
+}
+
+.footer {
+  padding: 50px;
+}
+
+.button-git {
+  position: relative;
+  background-color: #FFB897;
+  padding: 10px 20px;
+  border-radius: 20px;
+  color: black;
+  cursor: pointer;
+  transition: background-color 0.5s, color 0.5s;
+}
+
+.button-link {
+  position: relative;
+  padding: 10px 20px;
+  background-color: black;
+  border-radius: 20px;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.5s, color 0.5s;
+}
+
+.button-git:hover{
+  background-color: #fff;
+  color: var(--clr);
+}
+
+.button-link:hover{
+  background-color: #fff;
+  color: var(--clr);
+}
