@@ -13,7 +13,7 @@ html, body {
     background-image: 
     radial-gradient(closest-side at 25% 25%,#F9E595 80%,#0000 81%),
     radial-gradient(closest-side at 75% 75%,#F9E595 80%,#0000 81%);
-    background-size: 400px 400px;
+    background-size: 20vw 20vw;
 
     animation: pan 180s linear infinite;
     background-color: #FECE5E;
@@ -100,6 +100,7 @@ canvas {
 }
 
 #score, #next-fruit {
+  font-size: 1vw;
   font-family: 'verdana';
   color: white;
 }
@@ -126,14 +127,19 @@ video {
   height: 15vw;
 }
 
+.project-descriptor {
+  padding: 1vw;
+  font-size: 1vw;
+}
+
 .footer {
-  padding: 50px;
+  padding: 3vw;
 }
 
 .button-git {
   position: relative;
   background-color: #FFB897;
-  padding: 10px 20px;
+  padding: 0.75vw 1.5vw;
   border-radius: 20px;
   color: black;
   cursor: pointer;
@@ -142,7 +148,7 @@ video {
 
 .button-link {
   position: relative;
-  padding: 10px 20px;
+  padding: 0.75vw 1.5vw;
   background-color: black;
   border-radius: 20px;
   color: #fff;

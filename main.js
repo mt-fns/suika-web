@@ -190,6 +190,13 @@ function createTrajectoryLine() {
 }
 
 function setupField() {
+    let title = new Sprite();
+    title.text = 'Untitled Circles Game (NOT Suika)';
+    title.y = canvas.h * 0.5;
+    title.collider = 'none';
+    title.w = 0;
+    title.h = 0;
+
     floor = new Sprite();
 	floor.y = canvas.h - (canvas.h * 0.05);
 	floor.w = 500 / scalingFactor;
@@ -310,6 +317,10 @@ function setup() {
 
     fruits = new Group();
     world.gravity.y = 30 / scalingFactor;
+
+    textFont('Verdana');
+    textStyle(BOLD);
+    textSize(20 / scalingFactor);
 
     randomFruit(canvas.w * 0.5, 0.1 * canvas.h);
     nextFruit();
